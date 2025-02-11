@@ -64,6 +64,19 @@ class CutiController extends Controller
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
         ]);
 
+        $startDate = Carbon::parse($request->tanggal_mulai);
+        $endDate = Carbon::parse($request->tanggal_selesai);
+        $daysRequested = $startDate->diffInDays($endDate) + 1;
+
+        $year = $startDate->year;
+        $totalCuti = Cuti::where('pegawai_id', $request->pegawai_id)
+            ->whereYear('tanggal_mulai', $year)
+            ->sum(DB::raw("DATEDIFF(tanggal_selesai, tanggal_mulai) + 1"));
+
+        if (($totalCuti + $daysRequested) > 5) {
+            return redirect()->back()->withErrors(['error' => 'Maksimal cuti per tahun adalah 5 hari!']);
+        }
+
         $cuti->update($request->all());
 
         return redirect()->route('cuti.index')->with('success', 'Cuti berhasil diperbarui.');

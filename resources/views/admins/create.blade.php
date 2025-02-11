@@ -5,6 +5,17 @@
 @section('content')
 <div class="card">
     <div class="card-header bg-primary text-white">Tambah Admin</div>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="card-body">
         <form action="{{ route('admins.store') }}" method="POST">
             @csrf
